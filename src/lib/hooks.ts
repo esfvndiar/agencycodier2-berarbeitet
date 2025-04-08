@@ -1,4 +1,4 @@
-import { useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 
 // Debounced scroll handler
 export const useScrollHandler = (callback: (scrollY: number) => void, delay: number = 16) => {
@@ -50,26 +50,28 @@ export const useIntersectionObserver = (
 };
 
 // Viewport size hook
-export const useViewportSize = () => {
-  const [size, setSize] = useState({
+export function useWindowSize(): { width: number; height: number } {
+  const [windowSize, setWindowSize] = useState({
     width: window.innerWidth,
-    height: window.innerHeight
+    height: window.innerHeight,
   });
 
   useEffect(() => {
-    const handleResize = () => {
-      setSize({
+    function handleResize() {
+      setWindowSize({
         width: window.innerWidth,
-        height: window.innerHeight
+        height: window.innerHeight,
       });
-    };
-
+    }
+    
+    handleResize();
     window.addEventListener('resize', handleResize);
+    
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  return size;
-};
+  return windowSize;
+}
 
 // Local storage hook
 export const useLocalStorage = <T>(key: string, initialValue: T) => {
@@ -97,21 +99,21 @@ export const useLocalStorage = <T>(key: string, initialValue: T) => {
 };
 
 // Media query hook
-export const useMediaQuery = (query: string) => {
+export function useMediaQuery(query: string): boolean {
   const [matches, setMatches] = useState(false);
 
   useEffect(() => {
     const media = window.matchMedia(query);
-    if (media.matches !== matches) {
-      setMatches(media.matches);
-    }
-    const listener = () => setMatches(media.matches);
-    media.addEventListener('change', listener);
-    return () => media.removeEventListener('change', listener);
-  }, [matches, query]);
+    const updateMatch = () => setMatches(media.matches);
+    
+    updateMatch();
+    media.addEventListener('change', updateMatch);
+    
+    return () => media.removeEventListener('change', updateMatch);
+  }, [query]);
 
   return matches;
-};
+}
 
 // Throttle function
 export const throttle = <T extends (...args: any[]) => any>(
@@ -138,4 +140,53 @@ export const debounce = <T extends (...args: any[]) => any>(
     clearTimeout(timeout);
     timeout = setTimeout(() => func(...args), wait);
   }) as T;
-}; 
+};
+
+// Scroll direction hook
+export function useScrollDirection() {
+  const [scrollDirection, setScrollDirection] = useState<'up' | 'down'>('up');
+  const [prevScroll, setPrevScroll] = useState(0);
+  const [isScrolled, setIsScrolled] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const currentScroll = window.pageYOffset;
+      setIsScrolled(currentScroll > 0);
+
+      if (currentScroll <= 0) {
+        setScrollDirection('up');
+      } else if (currentScroll > prevScroll) {
+        setScrollDirection('down');
+      } else {
+        setScrollDirection('up');
+      }
+
+      setPrevScroll(currentScroll);
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, [prevScroll]);
+
+  return { scrollDirection, isScrolled };
+}
+
+// Click outside hook
+export function useClickOutside(ref: React.RefObject<HTMLElement>, handler: () => void) {
+  useEffect(() => {
+    const listener = (event: MouseEvent | TouchEvent) => {
+      if (!ref.current || ref.current.contains(event.target as Node)) {
+        return;
+      }
+      handler();
+    };
+
+    document.addEventListener('mousedown', listener);
+    document.addEventListener('touchstart', listener);
+
+    return () => {
+      document.removeEventListener('mousedown', listener);
+      document.removeEventListener('touchstart', listener);
+    };
+  }, [ref, handler]);
+}

@@ -1,4 +1,4 @@
-import React, { Component, ErrorInfo, ReactNode } from 'react';
+import { Component, ErrorInfo, ReactNode } from 'react';
 
 interface Props {
   children: ReactNode;
@@ -27,30 +27,16 @@ class ErrorBoundary extends Component<Props, State> {
   public render() {
     if (this.state.hasError) {
       return this.props.fallback || (
-        <div className="min-h-screen flex items-center justify-center bg-white">
-          <div className="max-w-md w-full mx-auto p-6 text-center">
-            <h2 className="text-2xl font-display font-medium text-zinc-900 mb-4">
-              Something went wrong
-            </h2>
-            <p className="text-zinc-600 mb-6">
-              We apologize for the inconvenience. Please try refreshing the page.
-            </p>
+        <div className="min-h-screen flex items-center justify-center bg-zinc-50">
+          <div className="text-center">
+            <h1 className="text-4xl font-bold text-zinc-900 mb-4">Something went wrong</h1>
+            <p className="text-zinc-600 mb-8">We apologize for the inconvenience.</p>
             <button
               onClick={() => window.location.reload()}
-              className="inline-flex items-center justify-center px-4 py-2 text-sm font-medium text-white bg-primary rounded-md hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary"
+              className="px-6 py-3 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors"
             >
               Refresh Page
             </button>
-            {process.env.NODE_ENV === 'development' && this.state.error && (
-              <div className="mt-8 p-4 bg-red-50 rounded-md text-left">
-                <p className="text-sm text-red-800 font-mono">
-                  {this.state.error.toString()}
-                </p>
-                <pre className="mt-2 text-xs text-red-600 overflow-auto">
-                  {this.state.error.stack}
-                </pre>
-              </div>
-            )}
           </div>
         </div>
       );
@@ -60,4 +46,4 @@ class ErrorBoundary extends Component<Props, State> {
   }
 }
 
-export default ErrorBoundary; 
+export default ErrorBoundary;

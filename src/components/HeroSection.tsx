@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import { ArrowRight } from 'lucide-react';
-import { motion, useScroll, useTransform } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { useInView } from 'react-intersection-observer';
+import { cn } from '@/lib/utils';
+import { ArrowRight } from 'lucide-react';
 
 const TYPING_VARIATIONS = [
   'Digital Excellence',
@@ -11,129 +12,70 @@ const TYPING_VARIATIONS = [
   'UI/UX Design'
 ];
 
-const Particle: React.FC<{
-  x: number;
-  y: number;
-  size: number;
-  delay: number;
-}> = ({ x, y, size, delay }) => (
-  <motion.div
-    initial={{ opacity: 0, scale: 0 }}
-    animate={{ opacity: 1, scale: 1 }}
-    transition={{
-      duration: 2,
-      delay,
-      repeat: Infinity,
-      repeatType: "reverse",
-      ease: "easeInOut"
-    }}
-    className="absolute bg-primary/10 rounded-full"
-    style={{
-      left: `${x}%`,
-      top: `${y}%`,
-      width: size,
-      height: size
-    }}
-  />
-);
-
 const HeroSection: React.FC = () => {
   const [displayedText, setDisplayedText] = useState('');
-  const { ref: inViewRef, inView } = useInView({
+  const { ref, inView } = useInView({
     threshold: 0.1,
     triggerOnce: true
   });
 
-  const { scrollYProgress } = useScroll({
-    target: inViewRef,
-    offset: ["start start", "end start"]
-  });
-
-  const y = useTransform(scrollYProgress, [0, 1], [0, -100]);
-  const opacity = useTransform(scrollYProgress, [0, 0.5], [1, 0]);
-
   useEffect(() => {
-    let timeout: NodeJS.Timeout;
-    let currentIndex = 0;
-    let currentText = '';
-    let isDeleting = false;
-    let typingSpeed = 100;
-
-    const type = () => {
-      const fullText = TYPING_VARIATIONS[currentIndex];
-      
-      if (isDeleting) {
-        currentText = fullText.substring(0, currentText.length - 1);
-        if (currentText === '') {
-          isDeleting = false;
-          currentIndex = (currentIndex + 1) % TYPING_VARIATIONS.length;
+    if (inView) {
+      const text = TYPING_VARIATIONS[0];
+      let currentIndex = 0;
+      const interval = setInterval(() => {
+        if (currentIndex <= text.length) {
+          setDisplayedText(text.slice(0, currentIndex));
+          currentIndex++;
+        } else {
+          clearInterval(interval);
         }
-      } else {
-        currentText = fullText.substring(0, currentText.length + 1);
-        if (currentText === fullText) {
-          timeout = setTimeout(() => {
-            isDeleting = true;
-          }, 2000);
-        }
-      }
+      }, 100);
 
-      setDisplayedText(currentText);
-      timeout = setTimeout(type, typingSpeed);
-    };
-
-    type();
-
-    return () => {
-      if (timeout) clearTimeout(timeout);
-    };
-  }, []);
+      return () => clearInterval(interval);
+    }
+  }, [inView]);
 
   return (
     <motion.section
-      ref={inViewRef}
-      className="relative min-h-screen flex items-center justify-center overflow-hidden bg-gradient-to-b from-zinc-50 to-white"
-      style={{ y, opacity }}
+      id="hero"
+      className={cn(
+        "min-h-screen flex items-center justify-center relative overflow-hidden",
+        "bg-gradient-to-b from-zinc-50 to-white"
+      )}
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.5 }}
     >
-      {/* Animated Background Pattern */}
-      <div className="absolute inset-0 bg-grid-pattern opacity-5" />
-      
-      {/* Particle Effect */}
-      <div className="absolute inset-0 overflow-hidden">
-        {Array.from({ length: 20 }).map((_, i) => (
-          <Particle
-            key={i}
-            x={Math.random() * 100}
-            y={Math.random() * 100}
-            size={Math.random() * 4 + 2}
-            delay={Math.random() * 2}
-          />
-        ))}
-      </div>
-
-      <div className="container mx-auto px-6 relative z-10">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={inView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.8, ease: "easeOut" }}
-          className="text-center"
-        >
-          <h1 
-            className="text-5xl md:text-7xl font-display font-medium mb-6 bg-clip-text text-transparent bg-gradient-to-r from-zinc-900 to-zinc-600"
-            id="hero-title"
-            aria-label="Welcome to ALAVI Digital Agency"
+      <div className="container px-4 mx-auto">
+        <div ref={ref} className="max-w-4xl mx-auto text-center">
+          <motion.h1
+            className="text-5xl md:text-7xl font-bold mb-6"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.2 }}
           >
             We Create
             <span className="block text-primary relative">
               {displayedText}
               <span className="inline-block w-0.5 h-8 bg-primary animate-pulse ml-1" aria-hidden="true" />
             </span>
-          </h1>
+          </motion.h1>
           
-          <p className="text-lg md:text-xl text-zinc-600 mb-8 max-w-2xl mx-auto">
+          <motion.p
+            className="text-xl text-zinc-600 mb-8"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.4 }}
+          >
             Transforming ideas into exceptional digital experiences through innovative design and cutting-edge technology.
-          </p>
-
-          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+          </motion.p>
+          
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.6 }}
+          >
             <a
               href="#contact"
               className="group relative px-8 py-4 bg-gradient-to-r from-primary to-primary/90 text-white rounded-full shadow-lg shadow-primary/20 hover:shadow-xl hover:shadow-primary/30 hover:scale-105 transition-all duration-300 overflow-hidden"
@@ -154,8 +96,8 @@ const HeroSection: React.FC = () => {
               Explore Our Services
               <ArrowRight className="w-5 h-5 transform group-hover:translate-x-1 transition-transform duration-300" />
             </a>
-          </div>
-        </motion.div>
+          </motion.div>
+        </div>
       </div>
     </motion.section>
   );

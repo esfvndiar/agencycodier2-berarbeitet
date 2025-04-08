@@ -51,11 +51,11 @@ const AboutSection: React.FC = () => {
         return;
       }
 
-      setAnimatedStats(prev => ({
+      setAnimatedStats({
         clients: Math.min(Math.floor((stats[0].target * currentStep) / steps), stats[0].target),
         projects: Math.min(Math.floor((stats[1].target * currentStep) / steps), stats[1].target),
         years: Math.min(Math.floor((stats[2].target * currentStep) / steps), stats[2].target)
-      }));
+      });
 
       currentStep++;
     }, interval);

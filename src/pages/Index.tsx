@@ -1,66 +1,43 @@
-import React, { useEffect, useRef } from 'react';
 import { Helmet } from 'react-helmet-async';
-import Navbar from '@/components/Navbar';
+import HeroSection from '@/components/HeroSection';
+import AboutSection from '@/components/AboutSection';
+import ServicesSection from '@/components/ServicesSection';
+import ContactSection from '@/components/ContactSection';
 import Footer from '@/components/Footer';
-import { ScrollReveal } from '@/components/ScrollReveal';
-import { SEO } from '@/lib/constants';
+import Navbar from '@/components/Navbar';
 
-// Lazy load sections
-const HeroSection = React.lazy(() => import('@/components/HeroSection'));
-const ServicesSection = React.lazy(() => import('@/components/ServicesSection'));
-const AboutSection = React.lazy(() => import('@/components/AboutSection'));
-const ContactSection = React.lazy(() => import('@/components/ContactSection'));
+const siteMetadata = {
+  title: "ALAVI - Digital Agency",
+  description: "We create beautiful and functional digital experiences",
+  keywords: "digital agency, web design, web development, branding, UI/UX",
+  author: "ALAVI",
+  ogImage: "/og-image.jpg",
+  twitterHandle: "@alaviagency",
+  siteUrl: "https://alavi.agency"
+};
 
-// Loading component for sections
-const SectionLoader: React.FC = () => (
-  <div className="min-h-screen flex items-center justify-center" role="status" aria-label="Loading section">
-    <div className="animate-pulse text-zinc-400">Loading...</div>
-  </div>
-);
-
-const Index: React.FC = () => {
-  const observerRef = useRef<IntersectionObserver | null>(null);
-  const sectionRefs = useRef<(HTMLDivElement | null)[]>([]);
-
-  useEffect(() => {
-    // Initialize IntersectionObserver for scroll animations
-    observerRef.current = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            entry.target.classList.add('animate-fade-in');
-            observerRef.current?.unobserve(entry.target);
-          }
-        });
-      },
-      {
-        threshold: 0.1,
-        rootMargin: '50px'
-      }
-    );
-
-    // Observe all sections
-    sectionRefs.current.forEach((ref) => {
-      if (ref) observerRef.current?.observe(ref);
-    });
-
-    return () => {
-      observerRef.current?.disconnect();
-    };
-  }, []);
-
+const Index = () => {
   return (
     <>
       <Helmet>
-        <title>{SEO.title}</title>
-        <meta name="description" content={SEO.description} />
-        <meta property="og:title" content={SEO.title} />
-        <meta property="og:description" content={SEO.description} />
+        <title>{siteMetadata.title}</title>
+        <meta name="description" content={siteMetadata.description} />
+        <meta name="keywords" content={siteMetadata.keywords} />
+        <meta name="author" content={siteMetadata.author} />
+        
+        {/* Open Graph */}
+        <meta property="og:title" content={siteMetadata.title} />
+        <meta property="og:description" content={siteMetadata.description} />
+        <meta property="og:image" content={siteMetadata.ogImage} />
+        <meta property="og:url" content={siteMetadata.siteUrl} />
         <meta property="og:type" content="website" />
-        <meta property="og:url" content={SEO.url} />
+        
+        {/* Twitter */}
         <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:title" content={SEO.title} />
-        <meta name="twitter:description" content={SEO.description} />
+        <meta name="twitter:title" content={siteMetadata.title} />
+        <meta name="twitter:description" content={siteMetadata.description} />
+        <meta name="twitter:image" content={siteMetadata.ogImage} />
+        <meta name="twitter:creator" content={siteMetadata.twitterHandle} />
       </Helmet>
 
       <div className="min-h-screen bg-background">
@@ -74,12 +51,10 @@ const Index: React.FC = () => {
         <Navbar />
         
         <main id="main-content" className="relative">
-          <React.Suspense fallback={<SectionLoader />}>
-            <HeroSection ref={(el) => (sectionRefs.current[0] = el)} />
-            <ServicesSection ref={(el) => (sectionRefs.current[1] = el)} />
-            <AboutSection ref={(el) => (sectionRefs.current[2] = el)} />
-            <ContactSection ref={(el) => (sectionRefs.current[3] = el)} />
-          </React.Suspense>
+          <HeroSection />
+          <AboutSection />
+          <ServicesSection />
+          <ContactSection />
         </main>
 
         <Footer />
