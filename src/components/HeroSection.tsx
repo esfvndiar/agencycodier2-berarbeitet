@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { useInView } from 'react-intersection-observer';
 import { cn } from '@/lib/utils';
-import { ArrowRight } from 'lucide-react';
+import { ArrowRight, Shield, Sparkles, Clock } from 'lucide-react';
 
 const HeroSection = () => {
   const [displayedText, setDisplayedText] = useState('');
@@ -44,17 +44,13 @@ const HeroSection = () => {
       <div className="absolute top-20 -left-20 w-96 h-96 bg-primary/5 rounded-full blur-3xl" />
       <div className="absolute bottom-20 -right-20 w-96 h-96 bg-primary/10 rounded-full blur-3xl" />
       
+      {/* Subtle background pattern */}
+      <div className="absolute inset-0" style={{
+        backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%239C92AC' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
+      }} />
+      
       <div className="container px-4 mx-auto relative z-10">
         <div ref={ref} className="max-w-4xl mx-auto text-center">
-          <motion.div
-            className="inline-block mb-4 px-4 py-1.5 rounded-full bg-primary/5 text-primary font-medium text-sm"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-          >
-            Welcome to ALAVI Digital Agency
-          </motion.div>
-
           <motion.h1
             className="text-5xl md:text-7xl font-bold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-zinc-900 to-zinc-600"
             initial={{ opacity: 0, y: 20 }}
@@ -75,7 +71,7 @@ const HeroSection = () => {
           </motion.p>
           
           <motion.div
-            className="flex flex-col sm:flex-row items-center justify-center gap-4"
+            className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-16"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.6 }}
@@ -95,24 +91,27 @@ const HeroSection = () => {
             </a>
           </motion.div>
 
-          {/* Stats Section */}
+          {/* Company Features */}
           <motion.div
-            className="grid grid-cols-2 sm:grid-cols-3 gap-8 mt-20 max-w-3xl mx-auto"
+            className="grid grid-cols-1 sm:grid-cols-3 gap-8 max-w-4xl mx-auto"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.8 }}
           >
-            <div className="text-center">
-              <div className="text-4xl font-bold text-primary mb-2">150+</div>
-              <div className="text-sm text-zinc-600">Projects Completed</div>
+            <div className="flex flex-col items-center p-6 rounded-2xl bg-white/50 backdrop-blur-sm border border-zinc-100">
+              <Shield className="w-10 h-10 text-primary mb-4" />
+              <h3 className="text-lg font-semibold mb-2">100% Satisfaction</h3>
+              <p className="text-sm text-zinc-600 text-center">Full refund guarantee if you're not completely satisfied</p>
             </div>
-            <div className="text-center">
-              <div className="text-4xl font-bold text-primary mb-2">98%</div>
-              <div className="text-sm text-zinc-600">Client Satisfaction</div>
+            <div className="flex flex-col items-center p-6 rounded-2xl bg-white/50 backdrop-blur-sm border border-zinc-100">
+              <Sparkles className="w-10 h-10 text-primary mb-4" />
+              <h3 className="text-lg font-semibold mb-2">Custom Solutions</h3>
+              <p className="text-sm text-zinc-600 text-center">Tailored digital solutions designed for your unique needs</p>
             </div>
-            <div className="text-center sm:col-span-1 col-span-2">
-              <div className="text-4xl font-bold text-primary mb-2">10+</div>
-              <div className="text-sm text-zinc-600">Years Experience</div>
+            <div className="flex flex-col items-center p-6 rounded-2xl bg-white/50 backdrop-blur-sm border border-zinc-100">
+              <Clock className="w-10 h-10 text-primary mb-4" />
+              <h3 className="text-lg font-semibold mb-2">Reliable Delivery</h3>
+              <p className="text-sm text-zinc-600 text-center">On-time delivery with precise attention to detail</p>
             </div>
           </motion.div>
         </div>
