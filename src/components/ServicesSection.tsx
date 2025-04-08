@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import ScrollReveal from '@/components/ScrollReveal';
 import { 
@@ -9,6 +9,7 @@ import {
   ArrowRight,
   ChevronRight
 } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 interface Service {
   title: string;
@@ -117,113 +118,107 @@ interface ServiceCardProps {
   service: Service;
 }
 
-const ServiceCard: React.FC<ServiceCardProps> = ({ service }) => {
+const ServiceCard = ({ service }: ServiceCardProps) => {
   const [isExpanded, setIsExpanded] = useState(false);
-  const cardRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    if (isExpanded && cardRef.current) {
-      cardRef.current.scrollIntoView({
-        behavior: 'smooth',
-        block: 'center'
-      });
-    }
-  }, [isExpanded]);
 
   return (
     <motion.div
-      ref={cardRef}
       layout
-      className={`bg-white rounded-2xl shadow-lg p-6 transition-all duration-300 ${
-        isExpanded ? 'col-span-full' : ''
-      }`}
+      className={cn(
+        "bg-white rounded-2xl shadow-lg transition-all duration-300",
+        "hover:shadow-xl",
+        isExpanded ? "col-span-full" : ""
+      )}
     >
-      <div className="flex flex-col h-full">
-        <div className="flex items-start justify-between mb-4">
-          <div className="p-3 bg-primary/10 rounded-xl">
-            {service.icon}
+      <div className="p-8">
+        <div className="flex items-start justify-between mb-6">
+          <div className="flex items-start gap-4">
+            <div className="p-3 bg-primary/5 rounded-xl text-primary">
+              {service.icon}
+            </div>
+            <div>
+              <h3 className="text-xl font-semibold text-zinc-900">{service.title}</h3>
+              <p className="text-sm text-zinc-500">{service.category}</p>
+            </div>
           </div>
           <button
             onClick={() => setIsExpanded(!isExpanded)}
-            className="text-primary hover:text-primary/80 transition-colors"
-            aria-label={isExpanded ? 'Show less' : 'Show more'}
+            className="text-zinc-400 hover:text-primary transition-colors"
+            aria-label={isExpanded ? "Show less" : "Show more"}
           >
             <ChevronRight
-              className={`w-6 h-6 transform transition-transform duration-300 ${
-                isExpanded ? 'rotate-90' : ''
-              }`}
+              className={cn(
+                "w-6 h-6 transform transition-transform duration-300",
+                isExpanded ? "rotate-90" : ""
+              )}
             />
           </button>
         </div>
 
-        <h3 className="text-xl font-semibold mb-2">{service.title}</h3>
-        <p className="text-muted-foreground mb-4">{service.description}</p>
+        <p className="text-zinc-600 mb-6">{service.description}</p>
+
+        <div className="grid grid-cols-3 gap-4 mb-6">
+          <div className="text-center p-3 bg-zinc-50 rounded-lg">
+            <div className="text-2xl font-bold text-primary mb-1">
+              {service.metrics.clients}+
+            </div>
+            <div className="text-sm text-zinc-600">Clients</div>
+          </div>
+          <div className="text-center p-3 bg-zinc-50 rounded-lg">
+            <div className="text-2xl font-bold text-primary mb-1">
+              {service.metrics.projects}+
+            </div>
+            <div className="text-sm text-zinc-600">Projects</div>
+          </div>
+          <div className="text-center p-3 bg-zinc-50 rounded-lg">
+            <div className="text-2xl font-bold text-primary mb-1">
+              {service.metrics.satisfaction}%
+            </div>
+            <div className="text-sm text-zinc-600">Satisfaction</div>
+          </div>
+        </div>
 
         <AnimatePresence>
           {isExpanded && (
             <motion.div
               initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: 'auto' }}
+              animate={{ opacity: 1, height: "auto" }}
               exit={{ opacity: 0, height: 0 }}
               transition={{ duration: 0.3 }}
               className="overflow-hidden"
             >
-              <div className="grid md:grid-cols-2 gap-8 mt-6">
+              <div className="grid md:grid-cols-2 gap-8 pt-6 border-t border-zinc-100">
                 <div>
                   <h4 className="text-lg font-semibold mb-4">Key Features</h4>
                   <ul className="space-y-3">
                     {service.features.map((feature, index) => (
                       <li key={index} className="flex items-center gap-2">
                         <CheckCircle2 className="w-5 h-5 text-primary" />
-                        <span>{feature}</span>
+                        <span className="text-zinc-700">{feature}</span>
                       </li>
                     ))}
                   </ul>
-
-                  <div className="mt-8">
-                    <h4 className="text-lg font-semibold mb-4">Success Metrics</h4>
-                    <div className="grid grid-cols-3 gap-4">
-                      <div className="text-center">
-                        <div className="text-2xl font-bold text-primary">
-                          {service.metrics.clients}+
-                        </div>
-                        <div className="text-sm text-muted-foreground">Clients</div>
-                      </div>
-                      <div className="text-center">
-                        <div className="text-2xl font-bold text-primary">
-                          {service.metrics.projects}+
-                        </div>
-                        <div className="text-sm text-muted-foreground">Projects</div>
-                      </div>
-                      <div className="text-center">
-                        <div className="text-2xl font-bold text-primary">
-                          {service.metrics.satisfaction}%
-                        </div>
-                        <div className="text-sm text-muted-foreground">Satisfaction</div>
-                      </div>
-                    </div>
-                  </div>
                 </div>
 
                 {service.caseStudy && (
                   <div>
                     <h4 className="text-lg font-semibold mb-4">Case Study</h4>
-                    <div className="aspect-video rounded-lg overflow-hidden mb-4">
+                    <div className="aspect-video rounded-lg overflow-hidden mb-4 bg-zinc-100">
                       <img
                         src={service.caseStudy.image}
                         alt={service.caseStudy.title}
-                        className="w-full h-full object-cover"
+                        className="w-full h-full object-cover hover:scale-105 transition-transform duration-500"
                       />
                     </div>
                     <h5 className="font-medium mb-2">{service.caseStudy.title}</h5>
-                    <p className="text-muted-foreground mb-4">
+                    <p className="text-zinc-600 text-sm mb-4">
                       {service.caseStudy.description}
                     </p>
                     <ul className="space-y-2">
                       {service.caseStudy.results.map((result, index) => (
                         <li key={index} className="flex items-center gap-2 text-sm">
                           <ArrowRight className="w-4 h-4 text-primary" />
-                          <span>{result}</span>
+                          <span className="text-zinc-700">{result}</span>
                         </li>
                       ))}
                     </ul>
@@ -238,15 +233,26 @@ const ServiceCard: React.FC<ServiceCardProps> = ({ service }) => {
   );
 };
 
-const ServicesSection: React.FC = () => {
+const ServicesSection = () => {
   return (
-    <section id="services" className="py-24 bg-zinc-50">
-      <div className="container px-4 mx-auto">
+    <section id="services" className="py-24 bg-zinc-50 relative overflow-hidden">
+      {/* Background Elements */}
+      <div className="absolute top-0 left-0 w-full h-32 bg-gradient-to-b from-white to-transparent" />
+      <div className="absolute bottom-0 left-0 w-full h-32 bg-gradient-to-t from-white to-transparent" />
+      <div className="absolute top-40 -left-40 w-80 h-80 bg-primary/5 rounded-full blur-3xl" />
+      <div className="absolute bottom-40 -right-40 w-80 h-80 bg-primary/5 rounded-full blur-3xl" />
+
+      <div className="container px-4 mx-auto relative">
         <ScrollReveal>
           <div className="max-w-2xl mx-auto text-center mb-16">
-            <h2 className="text-4xl font-bold mb-4">Our Services</h2>
-            <p className="text-muted-foreground">
-              We offer comprehensive digital solutions tailored to your business needs.
+            <div className="inline-block px-4 py-1.5 mb-4 rounded-full bg-primary/5 text-primary text-sm font-medium">
+              Our Services
+            </div>
+            <h2 className="text-4xl font-bold mb-4 bg-clip-text text-transparent bg-gradient-to-r from-zinc-900 to-zinc-600">
+              Comprehensive Digital Solutions
+            </h2>
+            <p className="text-zinc-600">
+              We offer a wide range of digital services to help your business grow and succeed in the digital age.
               From web development to digital marketing, we've got you covered.
             </p>
           </div>
@@ -259,6 +265,18 @@ const ServicesSection: React.FC = () => {
             </ScrollReveal>
           ))}
         </div>
+
+        <ScrollReveal>
+          <div className="text-center mt-16">
+            <a
+              href="#contact"
+              className="inline-flex items-center px-8 py-4 bg-primary text-white rounded-full hover:bg-primary/90 transition-all duration-300 shadow-lg shadow-primary/25 hover:shadow-xl hover:shadow-primary/30 hover:scale-[1.02]"
+            >
+              Start Your Project
+              <ArrowRight className="ml-2 w-5 h-5" />
+            </a>
+          </div>
+        </ScrollReveal>
       </div>
     </section>
   );
