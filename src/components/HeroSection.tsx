@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { ArrowRight } from 'lucide-react';
 import { motion, useScroll, useTransform } from 'framer-motion';
 import { useInView } from 'react-intersection-observer';
@@ -38,17 +38,15 @@ const Particle: React.FC<{
 );
 
 const HeroSection: React.FC = () => {
-  const [currentTextIndex, setCurrentTextIndex] = useState(0);
-  const [isTyping, setIsTyping] = useState(true);
   const [displayedText, setDisplayedText] = useState('');
-  const sectionRef = useRef<HTMLElement>(null);
-  const { scrollYProgress } = useScroll({
-    target: sectionRef,
-    offset: ["start start", "end start"]
-  });
   const { ref: inViewRef, inView } = useInView({
     threshold: 0.1,
     triggerOnce: true
+  });
+
+  const { scrollYProgress } = useScroll({
+    target: inViewRef,
+    offset: ["start start", "end start"]
   });
 
   const y = useTransform(scrollYProgress, [0, 1], [0, -100]);
@@ -91,11 +89,8 @@ const HeroSection: React.FC = () => {
   }, []);
 
   return (
-    <section
-      ref={(node) => {
-        sectionRef.current = node;
-        inViewRef(node);
-      }}
+    <motion.section
+      ref={inViewRef}
       className="relative min-h-screen flex items-center justify-center overflow-hidden bg-gradient-to-b from-zinc-50 to-white"
       style={{ y, opacity }}
     >
@@ -162,7 +157,7 @@ const HeroSection: React.FC = () => {
           </div>
         </motion.div>
       </div>
-    </section>
+    </motion.section>
   );
 };
 

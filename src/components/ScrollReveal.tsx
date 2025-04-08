@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState, ReactNode } from 'react';
+import { cn } from '@/lib/utils';
 
 type AnimationType = 'fade-up' | 'fade-left' | 'fade-right' | 'zoom-in' | 'flip' | 'slide-up';
 
@@ -21,10 +22,9 @@ const ScrollReveal: React.FC<ScrollRevealProps> = ({
 }) => {
   const [isVisible, setIsVisible] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
-  const observerRef = useRef<IntersectionObserver | null>(null);
 
   useEffect(() => {
-    observerRef.current = new IntersectionObserver(
+    const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) {
           setTimeout(() => {
@@ -32,7 +32,7 @@ const ScrollReveal: React.FC<ScrollRevealProps> = ({
           }, delay);
           
           if (once && ref.current) {
-            observerRef.current?.unobserve(ref.current);
+            observer.unobserve(ref.current);
           }
         } else if (!once) {
           setIsVisible(false);
@@ -45,39 +45,35 @@ const ScrollReveal: React.FC<ScrollRevealProps> = ({
     );
 
     if (ref.current) {
-      observerRef.current.observe(ref.current);
+      observer.observe(ref.current);
     }
 
-    return () => {
-      if (observerRef.current) {
-        observerRef.current.disconnect();
-      }
-    };
+    return () => observer.disconnect();
   }, [threshold, delay, once]);
 
   const getAnimationClass = (): string => {
     const baseClasses = 'transition-all duration-1000 ease-out';
     const visibilityClasses = isVisible 
-      ? 'opacity-100 translate-y-0 translate-x-0 scale-100 rotateY-0' 
+      ? 'opacity-100 translate-y-0 translate-x-0 scale-100 rotate-y-0' 
       : 'opacity-0';
 
-    const animationClasses = isVisible ? '' : {
+    const animationClasses = !isVisible ? {
       'fade-up': 'translate-y-10',
       'fade-left': '-translate-x-10',
       'fade-right': 'translate-x-10',
       'zoom-in': 'scale-95',
-      'flip': 'rotateY-90',
+      'flip': 'rotate-y-90',
       'slide-up': 'translate-y-20'
-    }[animation];
+    }[animation] : '';
 
-    return `${baseClasses} ${visibilityClasses} ${animationClasses}`;
+    return cn(baseClasses, visibilityClasses, animationClasses);
   };
 
   return (
     <div 
       ref={ref}
-      className={`${className} ${getAnimationClass()}`}
-      style={{ transitionDelay: isVisible ? `${delay}ms` : '0ms' }}
+      className={cn(className, getAnimationClass())}
+      style={{ transitionDelay: `${isVisible ? delay : 0}ms` }}
     >
       {children}
     </div>

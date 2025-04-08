@@ -1,15 +1,10 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ScrollReveal } from '@/components/ScrollReveal';
+import ScrollReveal from '@/components/ScrollReveal';
 import { 
   Code2, 
   Palette, 
   BarChart3, 
-  Globe, 
-  Smartphone, 
-  Search, 
-  Users, 
-  Clock, 
   CheckCircle2,
   ArrowRight,
   ChevronRight
@@ -100,244 +95,169 @@ const SERVICES: Service[] = [
       satisfaction: 97
     },
     features: [
-      "SEO Optimization",
+      "SEO & Content Strategy",
       "Social Media Marketing",
-      "Content Strategy",
+      "Email Campaigns",
       "Analytics & Reporting"
     ],
     caseStudy: {
-      title: "Brand Awareness Campaign",
-      description: "Increased brand visibility and engagement through targeted marketing strategies.",
-      image: "https://images.unsplash.com/photo-1557838923-2985c318be48?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2080&q=80",
+      title: "Brand Growth Campaign",
+      description: "Comprehensive digital marketing strategy that doubled online presence.",
+      image: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2426&q=80",
       results: [
-        "200% increase in social media followers",
-        "150% growth in website traffic",
-        "80% higher brand recognition"
+        "100% increase in organic traffic",
+        "150% growth in social media followers",
+        "75% higher lead generation"
       ]
     }
   }
 ];
 
-const CATEGORIES = ["All", "Development", "Design", "Marketing"];
+interface ServiceCardProps {
+  service: Service;
+}
 
-const ServiceCard: React.FC<{ service: Service }> = ({ service }) => {
+const ServiceCard: React.FC<ServiceCardProps> = ({ service }) => {
   const [isExpanded, setIsExpanded] = useState(false);
   const cardRef = useRef<HTMLDivElement>(null);
-  const [isHovered, setIsHovered] = useState(false);
 
   useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (cardRef.current && !cardRef.current.contains(event.target as Node)) {
-        setIsExpanded(false);
-      }
-    };
-
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, []);
+    if (isExpanded && cardRef.current) {
+      cardRef.current.scrollIntoView({
+        behavior: 'smooth',
+        block: 'center'
+      });
+    }
+  }, [isExpanded]);
 
   return (
     <motion.div
       ref={cardRef}
-      className="relative bg-white rounded-2xl shadow-lg overflow-hidden transition-all duration-500"
-      style={{
-        maxHeight: isExpanded ? '800px' : '400px',
-        cursor: 'pointer'
-      }}
-      onClick={() => setIsExpanded(!isExpanded)}
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
       layout
+      className={`bg-white rounded-2xl shadow-lg p-6 transition-all duration-300 ${
+        isExpanded ? 'col-span-full' : ''
+      }`}
     >
-      {/* Service Header */}
-      <div className="p-6 relative z-10">
+      <div className="flex flex-col h-full">
         <div className="flex items-start justify-between mb-4">
-          <div className="flex items-center gap-3">
-            <div className="p-3 bg-primary/10 rounded-xl text-primary">
-              {service.icon}
-            </div>
-            <div>
-              <h3 className="text-xl font-medium text-zinc-900">{service.title}</h3>
-              <span className="text-sm text-zinc-500">{service.category}</span>
-            </div>
+          <div className="p-3 bg-primary/10 rounded-xl">
+            {service.icon}
           </div>
-          <motion.div
-            animate={{ rotate: isExpanded ? 90 : 0 }}
-            transition={{ duration: 0.3 }}
+          <button
+            onClick={() => setIsExpanded(!isExpanded)}
+            className="text-primary hover:text-primary/80 transition-colors"
+            aria-label={isExpanded ? 'Show less' : 'Show more'}
           >
-            <ChevronRight className="w-6 h-6 text-zinc-400" />
-          </motion.div>
-        </div>
-        
-        <p className="text-zinc-600 mb-4">{service.description}</p>
-
-        {/* Service Metrics */}
-        <div className="grid grid-cols-3 gap-4 mb-4">
-          <div className="text-center">
-            <div className="text-2xl font-medium text-primary">{service.metrics.clients}+</div>
-            <div className="text-sm text-zinc-500">Clients</div>
-          </div>
-          <div className="text-center">
-            <div className="text-2xl font-medium text-primary">{service.metrics.projects}+</div>
-            <div className="text-sm text-zinc-500">Projects</div>
-          </div>
-          <div className="text-center">
-            <div className="text-2xl font-medium text-primary">{service.metrics.satisfaction}%</div>
-            <div className="text-sm text-zinc-500">Satisfaction</div>
-          </div>
+            <ChevronRight
+              className={`w-6 h-6 transform transition-transform duration-300 ${
+                isExpanded ? 'rotate-90' : ''
+              }`}
+            />
+          </button>
         </div>
 
-        {/* Features List */}
-        <div className="space-y-2 mb-4">
-          {service.features.map((feature, index) => (
-            <div key={index} className="flex items-center gap-2 text-zinc-600">
-              <CheckCircle2 className="w-4 h-4 text-primary" />
-              <span>{feature}</span>
-            </div>
-          ))}
-        </div>
-      </div>
+        <h3 className="text-xl font-semibold mb-2">{service.title}</h3>
+        <p className="text-muted-foreground mb-4">{service.description}</p>
 
-      {/* Case Study */}
-      <AnimatePresence>
-        {isExpanded && service.caseStudy && (
-          <motion.div
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: "auto" }}
-            exit={{ opacity: 0, height: 0 }}
-            transition={{ duration: 0.3 }}
-            className="border-t border-zinc-100"
-          >
-            <div className="p-6">
-              <h4 className="text-lg font-medium text-zinc-900 mb-2">{service.caseStudy.title}</h4>
-              <p className="text-zinc-600 mb-4">{service.caseStudy.description}</p>
-              
-              <div className="relative h-48 mb-4 rounded-xl overflow-hidden group">
-                <img
-                  src={service.caseStudy.image}
-                  alt={service.caseStudy.title}
-                  className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-              </div>
+        <AnimatePresence>
+          {isExpanded && (
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: 'auto' }}
+              exit={{ opacity: 0, height: 0 }}
+              transition={{ duration: 0.3 }}
+              className="overflow-hidden"
+            >
+              <div className="grid md:grid-cols-2 gap-8 mt-6">
+                <div>
+                  <h4 className="text-lg font-semibold mb-4">Key Features</h4>
+                  <ul className="space-y-3">
+                    {service.features.map((feature, index) => (
+                      <li key={index} className="flex items-center gap-2">
+                        <CheckCircle2 className="w-5 h-5 text-primary" />
+                        <span>{feature}</span>
+                      </li>
+                    ))}
+                  </ul>
 
-              <div className="space-y-2">
-                {service.caseStudy.results.map((result, index) => (
-                  <div key={index} className="flex items-center gap-2 text-zinc-600">
-                    <ArrowRight className="w-4 h-4 text-primary" />
-                    <span>{result}</span>
+                  <div className="mt-8">
+                    <h4 className="text-lg font-semibold mb-4">Success Metrics</h4>
+                    <div className="grid grid-cols-3 gap-4">
+                      <div className="text-center">
+                        <div className="text-2xl font-bold text-primary">
+                          {service.metrics.clients}+
+                        </div>
+                        <div className="text-sm text-muted-foreground">Clients</div>
+                      </div>
+                      <div className="text-center">
+                        <div className="text-2xl font-bold text-primary">
+                          {service.metrics.projects}+
+                        </div>
+                        <div className="text-sm text-muted-foreground">Projects</div>
+                      </div>
+                      <div className="text-center">
+                        <div className="text-2xl font-bold text-primary">
+                          {service.metrics.satisfaction}%
+                        </div>
+                        <div className="text-sm text-muted-foreground">Satisfaction</div>
+                      </div>
+                    </div>
                   </div>
-                ))}
-              </div>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+                </div>
 
-      {/* Hover Effect */}
-      <motion.div
-        className="absolute inset-0 bg-gradient-to-r from-primary/5 to-transparent"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: isHovered ? 1 : 0 }}
-        transition={{ duration: 0.3 }}
-      />
+                {service.caseStudy && (
+                  <div>
+                    <h4 className="text-lg font-semibold mb-4">Case Study</h4>
+                    <div className="aspect-video rounded-lg overflow-hidden mb-4">
+                      <img
+                        src={service.caseStudy.image}
+                        alt={service.caseStudy.title}
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                    <h5 className="font-medium mb-2">{service.caseStudy.title}</h5>
+                    <p className="text-muted-foreground mb-4">
+                      {service.caseStudy.description}
+                    </p>
+                    <ul className="space-y-2">
+                      {service.caseStudy.results.map((result, index) => (
+                        <li key={index} className="flex items-center gap-2 text-sm">
+                          <ArrowRight className="w-4 h-4 text-primary" />
+                          <span>{result}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
     </motion.div>
   );
 };
 
 const ServicesSection: React.FC = () => {
-  const [selectedCategory, setSelectedCategory] = useState("All");
-  const [isVisible, setIsVisible] = useState(false);
-  const sectionRef = useRef<HTMLElement>(null);
-
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach(entry => {
-          if (entry.isIntersecting) {
-            setIsVisible(true);
-            observer.unobserve(entry.target);
-          }
-        });
-      },
-      { threshold: 0.1 }
-    );
-
-    if (sectionRef.current) {
-      observer.observe(sectionRef.current);
-    }
-
-    return () => observer.disconnect();
-  }, []);
-
-  const filteredServices = selectedCategory === "All"
-    ? SERVICES
-    : SERVICES.filter(service => service.category === selectedCategory);
-
   return (
-    <section
-      ref={sectionRef}
-      id="services"
-      className="py-24 bg-gradient-to-b from-zinc-50 to-white relative overflow-hidden"
-    >
-      {/* Background Elements */}
-      <div className="absolute inset-0 bg-grid-pattern opacity-5" />
-      <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-b from-primary/5 to-transparent" />
-      
-      {/* Decorative Elements */}
-      <div className="absolute top-20 left-20 w-64 h-64 bg-primary/10 rounded-full blur-3xl" />
-      <div className="absolute bottom-20 right-20 w-64 h-64 bg-primary/5 rounded-full blur-3xl" />
+    <section id="services" className="py-24 bg-zinc-50">
+      <div className="container px-4 mx-auto">
+        <ScrollReveal>
+          <div className="max-w-2xl mx-auto text-center mb-16">
+            <h2 className="text-4xl font-bold mb-4">Our Services</h2>
+            <p className="text-muted-foreground">
+              We offer comprehensive digital solutions tailored to your business needs.
+              From web development to digital marketing, we've got you covered.
+            </p>
+          </div>
+        </ScrollReveal>
 
-      <div className="container mx-auto px-6 relative z-10">
-        <div className="text-center mb-16">
-          <h2 className="text-4xl md:text-5xl font-display font-medium mb-6 bg-clip-text text-transparent bg-gradient-to-r from-zinc-900 to-zinc-600">
-            Our Services
-          </h2>
-          <p className="text-lg text-zinc-600 max-w-2xl mx-auto">
-            Comprehensive digital solutions tailored to your business needs, delivered with expertise and innovation.
-          </p>
-        </div>
-
-        {/* Category Filters */}
-        <div className="flex flex-wrap justify-center gap-4 mb-12">
-          {CATEGORIES.map((category) => (
-            <button
-              key={category}
-              onClick={() => setSelectedCategory(category)}
-              className={`px-6 py-2 rounded-full text-sm font-medium transition-all duration-300 ${
-                selectedCategory === category
-                  ? 'bg-primary text-white shadow-lg shadow-primary/20'
-                  : 'bg-white text-zinc-600 hover:bg-zinc-50'
-              }`}
-            >
-              {category}
-            </button>
-          ))}
-        </div>
-
-        {/* Services Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {filteredServices.map((service, index) => (
-            <motion.div
-              key={service.title}
-              initial={{ opacity: 0, y: 20 }}
-              animate={isVisible ? { opacity: 1, y: 0 } : {}}
-              transition={{ duration: 0.5, delay: index * 0.1 }}
-            >
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+          {SERVICES.map((service) => (
+            <ScrollReveal key={service.title}>
               <ServiceCard service={service} />
-            </motion.div>
+            </ScrollReveal>
           ))}
-        </div>
-
-        {/* CTA */}
-        <div className="text-center mt-16">
-          <a
-            href="#contact"
-            className="inline-flex items-center gap-2 px-8 py-4 bg-gradient-to-r from-primary to-primary/90 text-white rounded-full shadow-lg shadow-primary/20 hover:shadow-xl hover:shadow-primary/30 hover:scale-105 transition-all duration-300"
-          >
-            Get Started
-            <ArrowRight className="w-5 h-5" />
-          </a>
         </div>
       </div>
     </section>

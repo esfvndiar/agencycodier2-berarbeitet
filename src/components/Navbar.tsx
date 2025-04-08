@@ -28,7 +28,7 @@ const Navbar: React.FC = () => {
   });
   const [showBackToTop, setShowBackToTop] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
-  const firstMenuItemRef = useRef<HTMLAnchorElement>(null);
+  const firstMenuItemRef = useRef<HTMLLIElement>(null);
   const lastScrollYRef = useRef(0);
   const isScrollingRef = useRef(false);
   const scrollTimeoutRef = useRef<number>();
@@ -146,7 +146,10 @@ const Navbar: React.FC = () => {
   // Focus management for mobile menu
   useEffect(() => {
     if (isMenuOpen && firstMenuItemRef.current) {
-      firstMenuItemRef.current.focus();
+      const firstLink = firstMenuItemRef.current.querySelector('a');
+      if (firstLink) {
+        firstLink.focus();
+      }
     }
   }, [isMenuOpen]);
 
@@ -301,20 +304,21 @@ const Navbar: React.FC = () => {
                     animationDelay: `${index * 100}ms`,
                     animationFillMode: 'forwards'
                   }}
+                  role="none"
                 >
                   <a
                     href={link.href}
-                    className={`block text-2xl font-medium ${
-                      link.title === 'Contact' 
+                    className={`block py-2 text-2xl font-medium ${
+                      link.title === 'Contact'
                         ? contactButtonStyles(true)
                         : 'text-zinc-900 hover:text-primary transition-all duration-300'
                     }`}
-                    role="menuitem"
                     onClick={handleLinkClick}
+                    role="menuitem"
                   >
                     {link.title}
                     {link.title === 'Contact' && (
-                      <ArrowRight className="w-6 h-6 ml-2 transform group-hover:translate-x-1 transition-transform duration-300" />
+                      <ArrowRight className="w-5 h-5 transform group-hover:translate-x-1 transition-transform duration-300" />
                     )}
                   </a>
                 </li>
@@ -327,12 +331,12 @@ const Navbar: React.FC = () => {
       {/* Back to Top Button */}
       <button
         onClick={scrollToTop}
-        className={`fixed bottom-8 right-8 z-50 p-3 rounded-full bg-white/80 backdrop-blur-md text-primary shadow-lg shadow-primary/20 hover:shadow-xl hover:shadow-primary/30 hover:scale-105 transition-all duration-500 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:ring-offset-2 ${
+        className={`fixed bottom-6 right-6 p-3 bg-primary text-white rounded-full shadow-lg hover:shadow-xl hover:scale-110 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:ring-offset-2 ${
           showBackToTop ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4 pointer-events-none'
         }`}
-        aria-label="Back to top"
+        aria-label="Scroll to top"
       >
-        <ArrowUp className="w-6 h-6" />
+        <ArrowUp className="w-5 h-5" />
       </button>
     </>
   );
